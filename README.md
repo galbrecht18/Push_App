@@ -1,2 +1,2 @@
 # Push_App
-Push notification project
+Salesforce Push Notification Project.
