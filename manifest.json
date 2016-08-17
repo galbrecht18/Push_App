@@ -4,15 +4,19 @@
   "name": "GA Notifications!",
   "description": "This extension will allow you to receive important Salesforce notifications!",
   "version": "1.0",
-
+  /*"background": {
+    "scripts": ["/app/main.js"],
+    "persistent": false
+  },*/
   "browser_action": {
     "default_icon": "ga_logo.png",
-    "default_popup": "popup.html"
+    "default_popup": "/app/popup.html"
   },
   "permissions": [
     "activeTab",
     "https://ajax.googleapis.com/",
     "gcm",
-    "storage"
+    "storage",
+    "notifications"
   ]
 }
