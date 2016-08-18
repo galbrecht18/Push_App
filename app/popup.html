@@ -4,21 +4,61 @@
 	<title>Notification Center</title>
 	<style>
 		body {
-			width: 400px;
+			width: 500px;
+			height: 150px;
+		}
+		#blank {
+			height:10px;
+		}
+		.Oswald {
+			font-family: Oswald, sans-serif;
+		}
+		#unregister {
+			margin-top: 5px;
 		}
 	</style>
+	<!--Oswald font (GA Preferred Font)-->
+	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+	<!--Bootstrap stuff-->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 </head>
 <body>
-	<h4>Your Recent Notifications</h4>
-	<div id="menuOptions">
-		<button id="register">Register</button>
-		<a href="#">This will ultimately be a link to the notifications in Salesforce</a>
-	<!--
-
-	Here should contain the most recent notifications, if possible.
-
-	-->
+	<div class="container Oswald" >
+		<div class="row">
+			<div class="col-xs-12">
+				<h4 class="Oswald">Welcome to GA Salesforce Notifications!</h4>
+			</div>
+		</div>
+		<div id="blank">
+		</div>
+		<div class="row">
+			<div class="col-xs-12" id="menuOptions">
+				<form>
+					<label for="sfusername">Please Enter Your Salesforce Username:</label>
+					<div class="input-group">
+						<input id="sfusername" class="form-control" type="email" placeholder="Salesforce Username">
+						<div class="input-group-btn">
+							<button type="button" class="btn btn-primary" id="register">Register 
+							<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-xs-12" id="unregisterbutton">
+				<button type="button" class="btn btn-warning" id="unregister">Un-Register 
+				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+				</button>
+			</div>
+		</div>
 	</div>
 </body>
+<!-- Latest compiled and minified JavaScript -->
+
+<script type="text/javascript" src="jquery-3.1.0.min.js"></script>
 <script type="text/javascript" src="main.js"></script>
 </html>
