@@ -16,9 +16,14 @@
 		#unregister {
 			margin-top: 5px;
 		}
+		.Roboto-Slab {
+			font-family: Roboto Slab, serif;
+		}
 	</style>
 	<!--Oswald font (GA Preferred Font)-->
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+	<!--Roboto-->
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 	<!--Bootstrap stuff-->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -27,7 +32,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 </head>
 <body>
-	<div class="container Oswald" >
+	<div class="container Roboto-Slab" >
 		<div class="row">
 			<div class="col-xs-12">
 				<h4 class="Oswald">Welcome to GA Salesforce Notifications!</h4>
@@ -38,21 +43,37 @@
 		<div class="row">
 			<div class="col-xs-12" id="menuOptions">
 				<form>
-					<label for="sfusername">Please Enter Your Salesforce Username:</label>
+					<label class="Oswald" for="sfusername">Please Enter Your Salesforce Username:</label>
 					<div class="input-group">
 						<input id="sfusername" class="form-control" type="email" placeholder="Salesforce Username">
 						<div class="input-group-btn">
-							<button type="button" class="btn btn-primary" id="register">Register 
+							<button type="button" class="btn btn-primary Oswald" id="register">Register 
 							<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
 							</button>
 						</div>
 					</div>
 				</form>
 			</div>
-			<div class="col-xs-12" id="unregisterbutton">
-				<button type="button" class="btn btn-warning" id="unregister">Un-Register 
-				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-				</button>
+		</div>
+		<!--Section to display most recent notifications-->
+		<div class="row">
+			<div class="col-xs-12" id="notificationsPanel">
+				<div class="panel panel-primary">
+					<div class="panel-heading"><h4 class="Oswald">Recent Notifications</h4></div>
+					<div class="panel-body">
+						<p>Below are your most recent notifications from Salesforce.</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12">
+			<div class="col-xs-12 well form-group" id="unregister">
+				<label style="font-size: 12px" class="col-xs-7 control-label" for="unregisterbutton">If you'd like to stop receiving these notifications, please unregister.</label>
+				<div class="col-xs-3" id="buttondiv">
+					<button type="button" class="btn btn-danger Oswald" id="unregisterbutton">Un-Register 
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					</button>
+				</div>
+			</div>
 			</div>
 		</div>
 	</div>

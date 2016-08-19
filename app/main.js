@@ -11,7 +11,6 @@ TO DO:
  - Get an image for each notification type
  - Handle errors on send and on signup
  - Send registration id back to sfdc team or directly update user in sfdc
-  ++ This will require some updates to the sign up gui asking for the user to input their sfdc username
  - Ability to pick which notifications they receive
   ++ Where should this live? In the app preferences or in Salesforce?
    -- If salesforce where? On the user?
@@ -34,6 +33,8 @@ chrome.gcm.onMessage.addListener(function(message) {
   var theMessage = message.data.message;
   var theLink = message.data.link;
   //we can conditionally set the image based on the message
+  //create a mostly unique message id
+  var messageId = theTitle+"_"+theLink;
 
   var notification = {
     type: "basic",
@@ -43,6 +44,15 @@ chrome.gcm.onMessage.addListener(function(message) {
   }
 
   chrome.notifications.create(notification);
+  //var to hold the existing notifications in memory
+  /*var notificationArray = [];
+  //get the notifications already existing, add this one two the list
+  chrome.storage.local.get('notifications', function(result) {
+    notificationArray
+    notificationList.push(notification);
+    console.log("The Notification List: "+notificationList);
+  });
+  chrome.storage.local.set({'notifications':notificationArray});*/
 });
 
 /***PROJECT ID FOR FIREBASE***/
@@ -59,13 +69,19 @@ $(document).ready(function() {
         return;
       }
       else {
-        $("#unregisterbutton").toggleClass("hidden");
+        $("#unregister").toggleClass("hidden");
+        $("#notificationsPanel").toggleClass("hidden");
         return;
       }
   });
+  chrome.storage.local.get('notifications', function(result) {
+    console.log("Notifications "+result.notifications);
+  });
 });
 
-/***SETUP BUTTON TO REGISTER APP***/
+/***GET RECENT NOTIFICATIONS FROM LOCAL STORAGE***/
+
+/***SETUP BUTTON TO REGISTER AND UNREGISTER APP***/
 document.addEventListener('DOMContentLoaded', function() {
   var registerButton = document.getElementById('register');
   registerButton.addEventListener('click', function() {
@@ -85,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
   });
-  var unregisterButton = document.getElementById('unregister');
+  var unregisterButton = document.getElementById('unregisterbutton');
   unregisterButton.addEventListener('click', function() {
     console.log("This is working for unreg!");
     chrome.gcm.unregister(unregisterCallback);
@@ -105,7 +121,8 @@ function registerCallback(registrationId) {
       chrome.storage.local.set({registered: true});
       console.log("You are now registered! Registration Id: "+registrationId);
       $("#menuOptions").toggleClass("hidden");
-      $("#unregisterbutton").toggleClass("hidden");
+      $("#unregister").toggleClass("hidden");
+      $("#notificationsPanel").toggleClass("hidden");
   }
 }
 
@@ -118,8 +135,9 @@ function unregisterCallback() {
   }
   else {
     chrome.storage.local.remove("registered", function() {
-      $("#unregisterbutton").toggleClass("hidden");
+      $("#unregister").toggleClass("hidden");
       $("#menuOptions").toggleClass("hidden");
+      $("#notificationsPanel").toggleClass("hidden");
       console.log("Success - Unregistered");
     });
   }
