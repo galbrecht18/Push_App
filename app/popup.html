@@ -19,6 +19,10 @@
 		.Roboto-Slab {
 			font-family: Roboto Slab, serif;
 		}
+		.alertClass {
+		    overflow: auto;
+  			max-width: 80ch;
+		}
 	</style>
 	<!--Oswald font (GA Preferred Font)-->
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
@@ -41,9 +45,15 @@
 		<div id="blank">
 		</div>
 		<div class="row">
-			<div class="col-xs-12" id="menuOptions">
+			<div class="col-xs-12 col-xs-offset-4" id="menuOptions">
 				<form>
-					<label class="Oswald" for="sfusername">Please Enter Your Salesforce Username:</label>
+					<button type="button" class="btn btn-primary btn-lg Oswald" id="register">Register 
+						<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
+					</button>
+
+					<!--Below is the code for an input to accept the sf username. This is not being used at the moment as we aren't submitting this data anywhere-->
+
+					<!--<label class="Oswald" for="sfusername">Please Enter Your Salesforce Username:</label>
 					<div class="input-group">
 						<input id="sfusername" class="form-control" type="email" placeholder="Salesforce Username">
 						<div class="input-group-btn">
@@ -51,17 +61,34 @@
 							<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
 							</button>
 						</div>
-					</div>
+					</div>-->
 				</form>
 			</div>
 		</div>
+		<!--Display the registration key and message to have user email this to sfdc support-->
 		<!--Section to display most recent notifications-->
 		<div class="row">
+			<div class="col-xs-12 hidden" id="regSuccess">
+				<div class="alert alert-info alert-dismissible alertClass" id="regalert" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+			</div>
 			<div class="col-xs-12" id="notificationsPanel">
 				<div class="panel panel-primary">
-					<div class="panel-heading"><h4 class="Oswald">Recent Notifications</h4></div>
+					<div class="panel-heading">
+						<label class="control-label" for="clearNotifications"><h4 class="Oswald">Recent Notifications</h4></label>
+						<div class="col-xs-4 pull-right" style="padding-top:3px" id="clearNotificationDiv">
+							<button type="button" class="btn btn-warning btn-sm Oswald" id="clearNotifications">Clear Notifications
+								<span class="glyphicon glyphicon-erase" aria-hidden="true"></span>
+							</button>
+						</div>
+					</div>
 					<div class="panel-body">
+						<br>
 						<p>Below are your most recent notifications from Salesforce.</p>
+						<ul id="recentNotifications">
+							<!--inserted by js here-->
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -81,5 +108,7 @@
 <!-- Latest compiled and minified JavaScript -->
 
 <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="main.js"></script>
+
 </html>
