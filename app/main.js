@@ -8,16 +8,12 @@ Component Details: Handles the logic for:
 Version History: 
 
 TO DO:
- - Get an image for each notification type
- - Handle errors on send and on signup
- - Send registration id back to sfdc team or directly update user in sfdc
  - Ability to pick which notifications they receive
   ++ Where should this live? In the app preferences or in Salesforce?
    -- If salesforce where? On the user?
  - Need to figure out how to handle bulk notifications (10+?)
  - Update remote site settings - DONE
  - Unregister method - DONE
- - Cache and display recent messages
  - If user is already registered, display a different UI - DONE
  - Need to make the links clickable in the notifications
 
@@ -33,30 +29,40 @@ chrome.gcm.onMessage.addListener(function(message) {
   var theTitle = message.data.title;
   var theMessage = message.data.message;
   var theLink = message.data.link;
-  //we can conditionally set the image based on the message
-  //create a mostly unique message id
-  //var messageId = theTitle+"_"+theLink;
+  var theImage = message.data.imageLink;
+  var theProgram = message.data.program;
 
   //build the notification object
   var notification = {
     type: "basic",
     title: theTitle,//needs to come from the message
     message: theMessage+"\n"+theLink,//will be url from message
-    iconUrl: chrome.extension.getURL('/new.png'),
+    iconUrl: chrome.extension.getURL(theImage),
     isClickable: true
-  }
+  };
   var notificationForArray = {
     type: "basic",
     title: theTitle,//needs to come from the message
     message: theMessage+"\n"+theLink,//will be url from message
-    link: theLink
+    link: theLink,
+    program: theProgram
   };
 
-  //send the notification
-  chrome.notifications.create(notification);
   //update the page with the new notification, may just scrap and window.reload page forcing this method to call
-  this.getRecentNotifications(notificationForArray);
-  //location.reload();
+  //this.getRecentNotifications(notificationForArray);
+
+  //send the notification
+  //but first check to make sure notifications are not paused
+  chrome.storage.local.get("paused", function(result) {
+    if(result["paused"] == false) {
+      chrome.notifications.create(notification);
+    }
+    else {
+      console.dir("Notifications are paused");
+    }
+  })
+
+  this.getRecentNotifications(notificationForArray)
 });
 
 //listen for errors
@@ -78,7 +84,7 @@ function getRecentNotifications(notification) {
       //determine how many items we currently have and add 1
       //this will be how we keep track and accurate keys
       //var itemNumber = notificationArray.length + 1;
-      notificationArray.push({notification});
+      notificationArray.unshift({notification});
     }
     else {
       console.log("No results");
@@ -99,20 +105,17 @@ function updateRecentNotifications(results) {
   if(notifications != null) {
     console.log("Length of Notifications "+notifications);
     for(x=0; x<notifications.length; x++) {
-      $("#recentNotifications").append("<li><a href=\""+notifications[x].notification.link
-        +"\">"+notifications[x].notification.title+" "+notifications[x].notification.link+"</a></li>");
-      console.log("Is this happening? "+x+" "+notifications[x].notification.title+" "+notifications[x].notification.link);
       if(x >= 10) {
         break;
       }
+      $("#recentNotifications").append("<li><a href=\""+notifications[x].notification.link
+        +"\">"+notifications[x].notification.title+" - "+notifications[x].notification.program+"</a></li>");
+      console.log("Is this happening? "+x+" "+notifications[x].notification.title+" "+notifications[x].notification.link);
     }
     console.dir(notifications);
   }
 }
 /***END OF CODE TO UPDATE RECENT NOTIFICATIONS***/
-
-/***PROJECT ID FOR FIREBASE***/
-var sendId = "760575387233";
 
 /***ALL OF CODE FOR WHEN PAGE LOADS***/
 /***JQUERY TO HIDE REGISTRATION SECTION IF ALREADY REGISTERED***/
@@ -142,7 +145,17 @@ $(document).ready(function() {
         return;
       }
   });
+  //display the notifications on screen
   chrome.storage.local.get('notifications', updateRecentNotifications);
+
+  //conditionally render the paused/resume buttons
+  chrome.storage.local.get("paused", function(result) {
+    console.dir(result["paused"]);
+    if(result["paused"]) {
+      $("#pauseNotifications").toggleClass("hidden");
+      $("#resumeNotifications").toggleClass("hidden");
+    }
+  })
 
   //add listener to button
   var registerButton = document.getElementById('register');
@@ -175,6 +188,22 @@ $(document).ready(function() {
       console.log("Notifications removed via button");
     });
     location.reload();
+  });
+
+  //button and logic for pause and resume buttons
+  $("#pauseNotifications").click(function() {
+    chrome.storage.local.set({paused:true});
+    $("#pauseNotifications").toggleClass("hidden");
+    $("#resumeNotifications").toggleClass("hidden");
+  });
+  $("#resumeNotifications").click(function() {
+    chrome.storage.local.get("paused", function(result) {
+      if(result["paused"]) {
+        chrome.storage.local.set({paused:false});
+        $("#pauseNotifications").toggleClass("hidden");
+        $("#resumeNotifications").toggleClass("hidden");
+      }
+    });
   });
 
   chrome.storage.local.get("theError", function(result) {
@@ -228,5 +257,3 @@ function unregisterCallback() {
     });
   }
 }
-
-/***NEED FUNCTION TO RETURN REGISTRATION KEY TO SOMEWHERE***/

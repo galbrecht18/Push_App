@@ -12,3 +12,7 @@ Salesforce Push Notification Project.
 - New Process: Lead Notifications Process
 - Updated Lead Radar Process
 - Updated Opp Radar Process 
+
+---
+### 8-29-2016
+- Added pause/resume button and functionality
