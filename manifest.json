@@ -3,7 +3,7 @@
 
   "name": "GA Notifications!",
   "description": "This extension will allow you to receive important Salesforce notifications!",
-  "version": "1.1",
+  "version": "2.3.1",
   "background": {
     "scripts": ["/app/main.js"],
     "persistent": true

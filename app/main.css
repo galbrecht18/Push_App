@@ -1,0 +1,70 @@
+body {
+	width: 500px;
+	height: 150px;
+}
+#blank {
+	height:10px;
+}
+.Oswald {
+	font-family: Oswald, sans-serif;
+}
+#unregister {
+	margin-top: 5px;
+}
+.Roboto-Slab {
+	font-family: Roboto Slab, serif;
+}
+.alertClass {
+    overflow: auto;
+		max-width: 80ch;
+}
+ul {
+	list-style-type: none;
+}
+
+li.Cancelled {
+	background: url('/cancelled_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+li.Enrolled {
+	background: url('/enrolled_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+li.Lead_Application_Completed {
+	background: url('/application_completed_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+li.Lead_Radar {
+	background: url('/lead_radar_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+li.New_Lead {
+	background: url('/new_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+li.New_Text {
+	background: url('/text_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+
+li.Opp_Application_Completed {
+	background: url('/application_completed_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+li.Opp_Radar {
+	background: url('/opp_radar_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}
+li.Withdrawn {
+	background: url('/withdrawn_small.png') no-repeat left top;
+	padding-left: 22px;
+	margin-top:3px;
+}

@@ -2,36 +2,16 @@
 <html>
 <head>
 	<title>Notification Center</title>
-	<style>
-		body {
-			width: 500px;
-			height: 150px;
-		}
-		#blank {
-			height:10px;
-		}
-		.Oswald {
-			font-family: Oswald, sans-serif;
-		}
-		#unregister {
-			margin-top: 5px;
-		}
-		.Roboto-Slab {
-			font-family: Roboto Slab, serif;
-		}
-		.alertClass {
-		    overflow: auto;
-  			max-width: 80ch;
-		}
-	</style>
-	<!--Oswald font (GA Preferred Font)-->
+
+	<!-- Oswald font (GA Preferred Font) -->
 	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
-	<!--Roboto-->
+	<!-- Roboto font -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+	<!-- Main custom css file -->
+	<link rel="stylesheet" type="text/css" href="main.css">
 	<!--Bootstrap stuff-->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 </head>
@@ -77,14 +57,14 @@
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						<label class="control-label" for="clearNotifications"><h4 class="Oswald">Recent Notifications</h4></label>
-						<div class="col-xs-4 pull-right" style="padding-top:3px" id="pauseResumeDiv">
+						<!--<div class="col-xs-4 pull-right" style="padding-top:3px" id="pauseResumeDiv">
 							<button type="button" class="btn btn-danger btn-sm Oswald" id="pauseNotifications">Pause Notifications
 								<span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
 							</button>
 							<button type="button" class="btn btn-success btn-sm Oswald hidden" id="resumeNotifications">Resume Notifications
 								<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
 							</button>
-						</div>
+						</div>-->
 						<div class="col-xs-4 pull-right" style="padding-top:3px" id="clearNotificationDiv">
 							<button type="button" class="btn btn-warning btn-sm Oswald" id="clearNotifications">Clear Notifications
 								<span class="glyphicon glyphicon-erase" aria-hidden="true"></span>

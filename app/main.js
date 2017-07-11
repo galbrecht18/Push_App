@@ -7,17 +7,16 @@ Component Details: Handles the logic for:
 
 Version History: 
 
-TO DO:
- - Ability to pick which notifications they receive
-  ++ Where should this live? In the app preferences or in Salesforce?
-   -- If salesforce where? On the user?
- - Need to figure out how to handle bulk notifications (10+?)
- - Update remote site settings - DONE
- - Unregister method - DONE
- - If user is already registered, display a different UI - DONE
- - Need to make the links clickable in the notifications
-
 ***********/
+
+/***class variable to check if paused or not***/
+//var paused = '';
+/***class variable queue to handle staggering of saves to local storage***/
+var notificationQueue = [];
+//below variable is the same as the queue above but used to store links to be clicked in the push notifications
+var linkQueue = [];
+//same as above, this is a counter for unread messages
+//var counterQueue = [];
 
 /***LISTENER FOR NOTIFICATIONS***/
 chrome.gcm.onMessage.addListener(function(message) {
@@ -31,38 +30,62 @@ chrome.gcm.onMessage.addListener(function(message) {
   var theLink = message.data.link;
   var theImage = message.data.imageLink;
   var theProgram = message.data.program;
+  var notificationId = theTitle+theLink;
+  var theType = message.data.type;
 
   //build the notification object
   var notification = {
     type: "basic",
     title: theTitle,//needs to come from the message
-    message: theMessage+"\n"+theLink,//will be url from message
+    message: theMessage+"\n"+theProgram,
     iconUrl: chrome.extension.getURL(theImage),
     isClickable: true
   };
+
+  //this is the object we store locally to be displayed in app
   var notificationForArray = {
     type: "basic",
     title: theTitle,//needs to come from the message
-    message: theMessage+"\n"+theLink,//will be url from message
+    message: theMessage+"\n"+theProgram,
     link: theLink,
-    program: theProgram
+    program: theProgram,
+    notificationID: notificationId,
+    notificationType: theType
   };
 
-  //update the page with the new notification, may just scrap and window.reload page forcing this method to call
-  //this.getRecentNotifications(notificationForArray);
+  //this object is the notificationID:record link stored locally for access on link click
+  var idToLink = {id: notificationId, link: theLink};
 
   //send the notification
   //but first check to make sure notifications are not paused
-  chrome.storage.local.get("paused", function(result) {
-    if(result["paused"] == false) {
-      chrome.notifications.create(notification);
-    }
-    else {
-      console.dir("Notifications are paused");
-    }
-  })
+  //if(!paused) {
+    chrome.notifications.create(notificationId, notification, function(message) {
+      setTimeout(function() {
+        chrome.notifications.clear(message);
+      },1800000);
+    });
+    //push the notification array to the queue
+    notificationQueue.push(notificationForArray);
+    //push to the link queue
+    linkQueue.push(idToLink);
+    //counterQueue.push(notificationForArray);
+    pushLinkToArray();
+    pushNotificationToArray();
+  //}
+  /*else {
+    console.dir("Notifications are paused!");
+  }*/
 
-  this.getRecentNotifications(notificationForArray)
+  //updateCounter();
+  //this.getRecentNotifications(notificationForArray, idToLink);
+});
+
+//allow users to click on the notification and be directd to the salesforce record
+chrome.notifications.onClicked.addListener(function(notificationId) {
+  chrome.storage.local.get('linkList', function(result) {
+    var theLink = result.linkList[notificationId];
+    chrome.tabs.create({url: theLink});
+  });
 });
 
 //listen for errors
@@ -72,32 +95,102 @@ chrome.gcm.onSendError.addListener(function (error) {
 });
 
 /***CODE BELOW UPDATES RECENT NOTIFICATIONS ARRAY ON PAGE***/
-function getRecentNotifications(notification) {
+function pushNotificationToArray() {
+  if (!notificationQueue.length) {
+    return;
+  }
+  //get the stored notifications if we have any
+  chrome.storage.local.get('notifications', function(result) {
+    notificationArray = [].concat(notificationQueue, result.notifications || []);
+    notificationQueue = [];
+    //check if its larger then 10 elements long, if so, slice it down to 10
+    if(notificationArray.length >= 10) {
+      notificationArray = notificationArray.slice(0,10);
+    }
+    //notificationArray.unshift({notification});
+    chrome.storage.local.set({notifications:notificationArray});
+  });
+  //location.reload();
+  chrome.browserAction.setBadgeText({text:"NEW"});
+}
+
+/***Code below handles link array (for clicking links in push notifications)**/
+function pushLinkToArray() {
+  if (!linkQueue.length) {
+    return;
+  }
+  //get the stored notifications if we have any
+  chrome.storage.local.get('linkList', function(result) {
+    var idlinklist = {};
+    if(result.linkList != null) {
+      idlinklist = result.linkList;
+    }
+    idlinklist[linkQueue[0].id] = linkQueue[0].link;
+    linkQueue = [];
+    console.dir("Id Link List in Method? "+Object.keys(idlinklist));
+    chrome.storage.local.set({linkList:idlinklist});
+  });
+}
+
+function updateCounter() {
+  if(!counterQueue.length) {
+    return;
+  }
+  chrome.storage.local.get('counter', function(result) {
+    var newCounter = 0;
+    if(result.counter != null) {
+      newCounter = result.counter + 1;
+    }
+    else {
+      newCounter = 1;
+    }
+    counterQueue = [];
+    chrome.storage.local.set({counter:newCounter});
+    newCounter = newCounter.toString();
+    chrome.browserAction.setBadgeText({text:newCounter});
+  });
+}
+
+/*function getRecentNotifications(notification, idToLink) {
   //array to hold the notifications
   var notificationArray = [];
   //array to hold result (used in method when page loads)
   var results = [];
+  //get the stored notifications if we have any
   chrome.storage.local.get('notifications', function(result) {
     if(result.notifications != null) {
       console.log("We have results "+result.notifications.length);
       notificationArray = result.notifications;
-      //determine how many items we currently have and add 1
-      //this will be how we keep track and accurate keys
-      //var itemNumber = notificationArray.length + 1;
       notificationArray.unshift({notification});
     }
     else {
       console.log("No results");
       notificationArray = [{notification}];
     }
+    //GA 9-2-2016...starting some experimental stuff here..
     chrome.storage.local.set({notifications:notificationArray});
   });
-  //removed the dom update, the end of this method should instead force a window refresh and then the dom
+
+  //get and store the idToLink objects for link click
+  chrome.storage.local.get('linkList', function(result) {
+    var idlinklist = {};
+    if(result.linkList != null) {
+      idlinklist = result.linkList;
+      idlinklist[idToLink.id] = idToLink.link;
+    }
+    else {
+      console.log("No results");
+      idlinklist[idToLink.id] = idToLink.link;
+    }
+    console.dir("Id Link List in Method? "+Object.keys(idlinklist));
+    chrome.storage.local.set({linkList:idlinklist});
+  });
+  
   //update is kicked off on window load
-  location.reload();
+  //location.reload();
+  //set the text on the app icon to indicate a new lead has been received
   chrome.browserAction.setBadgeText({text:"NEW"});
-  //this.updateRecentNotifications(results);
-}
+}*/
 
 /***FUNCTION TO PHYSICALLY POPULATE RECENT NOTIFICATIONS HTML PAGE***/
 function updateRecentNotifications(results) {
@@ -108,11 +201,12 @@ function updateRecentNotifications(results) {
       if(x >= 10) {
         break;
       }
-      $("#recentNotifications").append("<li><a href=\""+notifications[x].notification.link
-        +"\">"+notifications[x].notification.title+" - "+notifications[x].notification.program+"</a></li>");
-      console.log("Is this happening? "+x+" "+notifications[x].notification.title+" "+notifications[x].notification.link);
+      $("#recentNotifications").append("<li class=\""+notifications[x].notificationType+"\">"
+        +"<a href=\""+notifications[x].link
+        +"\">"+notifications[x].title+" - "+notifications[x].program+"</a></li>");
+      console.log("Is this happening? "+x+" "+notifications[x].title+" "+notifications[x].link+" "+notifications[x].notificationType);
     }
-    console.dir(notifications);
+    console.dir("Show me the notifications: "+notifications);
   }
 }
 /***END OF CODE TO UPDATE RECENT NOTIFICATIONS***/
@@ -122,6 +216,18 @@ function updateRecentNotifications(results) {
 /***SETUP BUTTONS TO REGISTER, UNREGISTER AND CLEAR NOTIFICATIONS***/
 $(document).ready(function() {
 
+  chrome.storage.local.get('linkList', function(result) {
+    if(result.linkList != null) {
+      Object.getOwnPropertyNames(result.linkList).forEach(function(val, idx, array) {
+        console.log(val + ' -> ' + result.linkList[val]);
+      });
+    }
+    else {
+      console.dir("Link List is Null");
+    }
+  });
+
+  chrome.storage.local.set({counter:0});
   chrome.browserAction.setBadgeText({text:""});
 
   //setup so we can click links from the side bar
@@ -149,13 +255,15 @@ $(document).ready(function() {
   chrome.storage.local.get('notifications', updateRecentNotifications);
 
   //conditionally render the paused/resume buttons
-  chrome.storage.local.get("paused", function(result) {
+  /*chrome.storage.local.get("paused", function(result) {
     console.dir(result["paused"]);
     if(result["paused"]) {
       $("#pauseNotifications").toggleClass("hidden");
       $("#resumeNotifications").toggleClass("hidden");
+      paused = true;
+      console.dir("Paused variable is: "+paused);
     }
-  })
+  })*/
 
   //add listener to button
   var registerButton = document.getElementById('register');
@@ -187,14 +295,17 @@ $(document).ready(function() {
     chrome.storage.local.remove("notifications", function() {
       console.log("Notifications removed via button");
     });
+    chrome.storage.local.remove("linkList", function() {
+    });
     location.reload();
   });
 
   //button and logic for pause and resume buttons
-  $("#pauseNotifications").click(function() {
+  /*$("#pauseNotifications").click(function() {
     chrome.storage.local.set({paused:true});
     $("#pauseNotifications").toggleClass("hidden");
     $("#resumeNotifications").toggleClass("hidden");
+    paused = true;
   });
   $("#resumeNotifications").click(function() {
     chrome.storage.local.get("paused", function(result) {
@@ -202,9 +313,10 @@ $(document).ready(function() {
         chrome.storage.local.set({paused:false});
         $("#pauseNotifications").toggleClass("hidden");
         $("#resumeNotifications").toggleClass("hidden");
+        paused = false;
       }
     });
-  });
+  });*/
 
   chrome.storage.local.get("theError", function(result) {
     console.dir("The Error if it exists: "+result["theError"]);

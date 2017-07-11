@@ -16,3 +16,12 @@ Salesforce Push Notification Project.
 ---
 ### 8-29-2016
 - Added pause/resume button and functionality
+
+---
+### 9-1-2016
+- Stable version. Can click links directly from push notification.
+- Timeout on push notifications to prevent receiving bulk amount of them on initial login.
+
+---
+### 10-24-2016
+- Removed pause/resume functionality and moved this logic into the server side (sfdc)
